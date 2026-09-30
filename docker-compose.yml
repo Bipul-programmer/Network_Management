@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: network-monitoring-postgres
+    environment:
+      POSTGRES_DB: network_monitoring
+      POSTGRES_USER: network_user
+      POSTGRES_PASSWORD: network_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - network-monitoring-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  network-monitoring-postgres-data:
+
+redis:
+   image: redis:7-alpine
+   container_name: network-monitoring-redis
+   environment:
+     REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+   command:
+     - sh
+     - -c
+     - exec redis-server --protected-mode yes --bind 0.0.0.0 --requirepass "$${REDIS_PASSWORD}"
+   ports:
+     - "127.0.0.1:6379:6379"
